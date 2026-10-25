@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AEGIS Threat Intelligence & Analytics</title>
+  
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet Map CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- App Stylesheet -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <div class="brand-section">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+      </div>
+      <div class="brand-titles">
+        <h1>AEGIS THREAT INTELLIGENCE & ANALYTICS</h1>
+        <div class="subtitle" id="activeDatasetLabel">Dataset: Loading...</div>
+      </div>
+      <div class="header-status-badge">
+        <span class="status-pulse"></span>
+        <span id="pipelineStatusText">PIPELINE ACTIVE</span>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn btn-outline" id="btnOpenLookup" title="Lookup threat intelligence for any IP">
+        <i data-lucide="search"></i> IP Intel Lookup
+      </button>
+      <button class="btn btn-outline" id="btnOpenDatasets" title="Select pre-configured realistic attack datasets">
+        <i data-lucide="database"></i> Load Scenario
+      </button>
+      <button class="btn btn-outline" id="btnOpenUpload" title="Upload custom CSV or JSON security logs">
+        <i data-lucide="upload-cloud"></i> Upload Logs
+      </button>
+      <button class="btn btn-primary" id="btnExportPdf" title="Download Executive Incident Report (PDF)">
+        <i data-lucide="file-text"></i> Export PDF
+      </button>
+      <button class="btn btn-outline" id="btnExportCsv" title="Download Alerts CSV">
+        <i data-lucide="download"></i> CSV
+      </button>
+    </div>
+  </header>
+
+  <!-- Visual 8-Step Pipeline Stepper Banner -->
+  <div class="stepper-banner">
+    <div class="step-item completed">
+      <span class="step-num">1</span> <span>App Opened</span>
+    </div>
+    <span class="step-arrow">&rarr;</span>
+    <div class="step-item completed">
+      <span class="step-num">2</span> <span>Upload/Select Logs</span>
+    </div>
+    <span class="step-arrow">&rarr;</span>
+    <div class="step-item completed">
+      <span class="step-num">3</span> <span>Parse & Validate</span>
+    </div>
+    <span class="step-arrow">&rarr;</span>
+    <div class="step-item completed">
+      <span class="step-num">4</span> <span>Detect Patterns</span>
+    </div>
+    <span class="step-arrow">&rarr;</span>
+    <div class="step-item completed">
+      <span class="step-num">5</span> <span>Threat Intel Query</span>
+    </div>
+    <span class="step-arrow">&rarr;</span>
+    <div class="step-item completed">
+      <span class="step-num">6</span> <span>Calculate Risk</span>
+    </div>
+    <span class="step-arrow">&rarr;</span>
+    <div class="step-item active">
+      <span class="step-num">7</span> <span>Analytics Dashboard</span>
+    </div>
+    <span class="step-arrow">&rarr;</span>
+    <div class="step-item active">
+      <span class="step-num">8</span> <span>Investigate & Export</span>
+    </div>
+  </div>
+
+  <!-- Main Content Dashboard -->
+  <main class="main-content">
+    
+    <!-- KPI Row -->
+    <section class="kpi-grid">
+      <div class="kpi-card kpi-accent">
+        <div class="kpi-label">
+          <span>Logs Analyzed</span>
+          <i data-lucide="file-check" style="width: 15px; height: 15px; color: var(--accent-cyan);"></i>
+        </div>
+        <div class="kpi-value" id="kpiTotalLogs">0</div>
+        <div class="kpi-sub" id="kpiLogSub">Normalized records</div>
+      </div>
+
+      <div class="kpi-card kpi-critical">
+        <div class="kpi-label">
+          <span>Critical Incidents</span>
+          <i data-lucide="alert-octagon" style="width: 15px; height: 15px; color: var(--sev-critical);"></i>
+        </div>
+        <div class="kpi-value" id="kpiCriticalCount" style="color: var(--sev-critical);">0</div>
+        <div class="kpi-sub">Immediate response required</div>
+      </div>
+
+      <div class="kpi-card kpi-high">
+        <div class="kpi-label">
+          <span>High / Medium Alerts</span>
+          <i data-lucide="shield-alert" style="width: 15px; height: 15px; color: var(--sev-high);"></i>
+        </div>
+        <div class="kpi-value" id="kpiHighMedCount" style="color: var(--sev-high);">0</div>
+        <div class="kpi-sub">Priority triage queue</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">
+          <span>Threat Actor / Malicious IPs</span>
+          <i data-lucide="crosshair" style="width: 15px; height: 15px; color: #C4B5FD;"></i>
+        </div>
+        <div class="kpi-value" id="kpiMaliciousIps" style="color: #C4B5FD;">0</div>
+        <div class="kpi-sub">Correlated IoC endpoints</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">
+          <span>Peak Risk Score</span>
+          <i data-lucide="gauge" style="width: 15px; height: 15px; color: #38BDF8;"></i>
+        </div>
+        <div class="kpi-value" id="kpiMaxRisk">0<span style="font-size: 14px; color: var(--text-muted);">/100</span></div>
+        <div class="kpi-sub" id="kpiAvgRisk">Avg risk: 0</div>
+      </div>
+    </section>
+
+    <!-- Map & Top Malicious IPs -->
+    <section class="analytics-grid-two">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <i data-lucide="globe"></i> Global Threat Origin & C2 Geolocation Map
+          </div>
+          <span class="card-badge" id="threatMapCount">0 External Threat Nodes</span>
+        </div>
+        <div id="threatMap"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <i data-lucide="skull"></i> Top Malicious Threat Actors & IPs
+          </div>
+          <span class="card-badge">Threat Intel Feeds</span>
+        </div>
+        <div class="ip-list" id="topIpsContainer">
+          <!-- Populated dynamically via JS -->
+          <div style="color: var(--text-muted); font-size: 12px; padding: 20px; text-align: center;">Loading threat actors...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Secondary Charts & MITRE Matrix Row -->
+    <section class="analytics-grid-three">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <i data-lucide="pie-chart"></i> Detection Vectors Breakdown
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="attackTypesChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <i data-lucide="activity"></i> Attack Velocity & Timeline
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="timelineChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <i data-lucide="layout-grid"></i> MITRE ATT&CK Matrix Coverage
+          </div>
+          <span class="card-badge" id="mitreTacticCount">0 Tactics</span>
+        </div>
+        <div class="mitre-list" id="mitreContainer">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs for Alerts, Logs, Threat Feeds -->
+    <div class="tabs-header">
+      <button class="tab-btn active" data-tab="tabAlerts">
+        <i data-lucide="shield-alert"></i> Prioritized Alerts & Investigation Queue (<span id="alertCountBadge">0</span>)
+      </button>
+      <button class="tab-btn" data-tab="tabLogs">
+        <i data-lucide="terminal"></i> Normalized Log Explorer (<span id="logCountBadge">0</span>)
+      </button>
+      <button class="tab-btn" data-tab="tabFeeds">
+        <i data-lucide="radio"></i> Threat Intelligence Sources & API Config
+      </button>
+    </div>
+
+    <!-- TAB 1: Alerts Table -->
+    <div class="tab-pane active" id="tabAlerts">
+      <div class="table-filter-bar">
+        <div class="search-box">
+          <i data-lucide="search" class="search-icon"></i>
+          <input type="text" class="search-input" id="alertSearchInput" placeholder="Filter alerts by IP, user, title...">
+        </div>
+
+        <div class="filter-pills" id="severityFilters">
+          <button class="pill-btn active" data-sev="ALL">All Severities</button>
+          <button class="pill-btn" data-sev="CRITICAL">Critical</button>
+          <button class="pill-btn" data-sev="HIGH">High</button>
+          <button class="pill-btn" data-sev="MEDIUM">Medium</button>
+          <button class="pill-btn" data-sev="LOW">Low</button>
+        </div>
+
+        <div class="filter-pills" id="statusFilters">
+          <button class="pill-btn active" data-status="ALL">All Status</button>
+          <button class="pill-btn" data-status="OPEN">Open</button>
+          <button class="pill-btn" data-status="INVESTIGATING">Investigating</button>
+          <button class="pill-btn" data-status="RESOLVED">Resolved</button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="cyber-table" id="alertsTable">
+          <thead>
+            <tr>
+              <th style="width: 80px;">Risk</th>
+              <th>Alert Title & MITRE Technique</th>
+              <th>Attacker (Source IP)</th>
+              <th>Target Asset</th>
+              <th>Evidence</th>
+              <th>Threat Classification</th>
+              <th style="width: 140px;">Triage Status</th>
+              <th style="width: 100px;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="alertsTableBody">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 2: Log Explorer -->
+    <div class="tab-pane" id="tabLogs">
+      <div class="table-filter-bar">
+        <div class="search-box" style="width: 320px;">
+          <i data-lucide="search" class="search-icon"></i>
+          <input type="text" class="search-input" id="logSearchInput" placeholder="Search normalized logs (IP, event, user)...">
+        </div>
+        <div style="font-size: 12px; color: var(--text-muted);" id="logStatsText">
+          Showing latest validated events
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="cyber-table">
+          <thead>
+            <tr>
+              <th style="width: 90px;">Log ID</th>
+              <th>Timestamp (UTC)</th>
+              <th>Event Type</th>
+              <th>Source IP:Port</th>
+              <th>Dest IP:Port</th>
+              <th>User</th>
+              <th>Status</th>
+              <th>Payload / Message</th>
+            </tr>
+          </thead>
+          <tbody id="logsTableBody">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 3: Threat Feeds & API Config -->
+    <div class="tab-pane" id="tabFeeds">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <i data-lucide="key"></i> Live Threat Intelligence API Integration
+            </div>
+          </div>
+          <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">
+            Optionally configure your API keys for real-time queries to AbuseIPDB and VirusTotal. If left empty, the pipeline uses its built-in curated threat feeds and high-fidelity offline cache.
+          </p>
+
+          <form id="apiKeysForm" style="display: flex; flex-direction: column; gap: 14px;">
+            <div>
+              <label style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 5px;">AbuseIPDB API Key (v2)</label>
+              <input type="password" class="search-input" id="abuseKeyInput" placeholder="Enter AbuseIPDB API Key...">
+            </div>
+            <div>
+              <label style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 5px;">VirusTotal API Key (v3)</label>
+              <input type="password" class="search-input" id="vtKeyInput" placeholder="Enter VirusTotal API Key...">
+            </div>
+            <button type="submit" class="btn btn-primary" style="align-self: flex-start;">
+              <i data-lucide="check"></i> Save API Configuration
+            </button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <i data-lucide="database"></i> Curated Intelligence Feeds Active
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 10px; font-size: 12px;">
+            <div class="breakdown-row">
+              <span><b>CISA Known Exploited Vulnerabilities (KEV)</b></span>
+              <span class="badge badge-low">SYNCHRONIZED</span>
+            </div>
+            <div class="breakdown-row">
+              <span><b>AbuseIPDB High-Confidence Malicious Database</b></span>
+              <span class="badge badge-low">ACTIVE</span>
+            </div>
+            <div class="breakdown-row">
+              <span><b>Tor Project Verified Exit Relays</b></span>
+              <span class="badge badge-low">ACTIVE</span>
+            </div>
+            <div class="breakdown-row">
+              <span><b>Cobalt Strike & Emotet C2 Tracker Feeds</b></span>
+              <span class="badge badge-low">ACTIVE</span>
+            </div>
+            <div class="breakdown-row">
+              <span><b>Emerging Threats Top 1000 Blocklist</b></span>
+              <span class="badge badge-low">ACTIVE</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL: Alert Deep Investigation Drawer -->
+  <div class="modal-overlay" id="investigationModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h3 id="invModalTitle" style="font-size: 16px; color: #fff;">Alert Investigation</h3>
+          <span id="invModalSubtitle" style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">ID: ALT-0000</span>
+        </div>
+        <button class="modal-close" id="btnCloseInvModal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Top alert overview -->
+        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(13, 20, 36, 0.8); padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+          <div>
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Composite Risk Priority</div>
+            <div id="invRiskScoreDisplay" style="font-size: 26px; font-family: var(--font-mono); font-weight: 700; color: #EF4444;">88/100 (CRITICAL)</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Recommended SOC Action</div>
+            <div id="invActionDisplay" style="font-size: 13px; font-weight: 600; color: #38BDF8;">Immediate Containment</div>
+          </div>
+        </div>
+
+        <!-- Explainable Risk Factors Breakdown -->
+        <div>
+          <h4 style="font-size: 13px; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+            <i data-lucide="info" style="width: 14px; height: 14px; color: var(--accent-cyan);"></i> Explainable Risk Score Breakdown
+          </h4>
+          <div id="invRiskBreakdownList" style="display: flex; flex-direction: column; gap: 6px;">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+
+        <!-- Attacker Threat Intelligence Profile -->
+        <div>
+          <h4 style="font-size: 13px; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+            <i data-lucide="shield" style="width: 14px; height: 14px; color: #A78BFA;"></i> Threat Intelligence & Geolocation Dossier
+          </h4>
+          <div id="invThreatIntelDossier" style="background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); font-size: 12px;">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+
+        <!-- MITRE ATT&CK Mapping -->
+        <div>
+          <h4 style="font-size: 13px; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+            <i data-lucide="target" style="width: 14px; height: 14px; color: #F59E0B;"></i> MITRE ATT&CK Mapping
+          </h4>
+          <div id="invMitreDisplay" style="background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); font-size: 12px;">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+
+        <!-- Correlated Evidence Logs -->
+        <div>
+          <h4 style="font-size: 13px; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+            <i data-lucide="file-code" style="width: 14px; height: 14px; color: #38BDF8;"></i> Correlated Log Evidence (<span id="invEvidenceCount">0</span> records)
+          </h4>
+          <div class="json-evidence-box" id="invEvidenceJson"></div>
+        </div>
+
+        <!-- Triage Status and Analyst Notes Form -->
+        <div style="background: rgba(13, 20, 36, 0.8); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+          <h4 style="font-size: 13px; color: #fff; margin-bottom: 10px;">Analyst Triage & Workflow</h4>
+          <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 12px; margin-bottom: 12px;">
+            <div>
+              <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Update Status</label>
+              <select id="invStatusSelect" class="search-input" style="width: 100%;">
+                <option value="OPEN">OPEN (Unreviewed)</option>
+                <option value="INVESTIGATING">INVESTIGATING (In Triage)</option>
+                <option value="RESOLVED">RESOLVED (Remediated)</option>
+                <option value="FALSE_POSITIVE">FALSE POSITIVE (Benign)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Analyst Notes</label>
+              <input type="text" id="invNotesInput" class="search-input" placeholder="Add forensic notes or containment actions taken...">
+            </div>
+          </div>
+          <button class="btn btn-primary" id="btnSaveTriage">
+            <i data-lucide="save"></i> Update Alert Status
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Scenarios / Presets Switcher -->
+  <div class="modal-overlay" id="datasetsModal">
+    <div class="modal-card" style="max-width: 680px;">
+      <div class="modal-header">
+        <h3 style="font-size: 16px; color: #fff; display: flex; align-items: center; gap: 8px;">
+          <i data-lucide="database" style="color: var(--accent-cyan);"></i> Select Synthetic Threat Scenario
+        </h3>
+        <button class="modal-close" id="btnCloseDatasetsModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 12px; color: var(--text-secondary);">
+          Choose from 4 pre-configured synthetic datasets simulating real-world enterprise cyber attack scenarios:
+        </p>
+        <div class="preset-grid" id="presetGridContainer">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Upload Custom Logs -->
+  <div class="modal-overlay" id="uploadModal">
+    <div class="modal-card" style="max-width: 580px;">
+      <div class="modal-header">
+        <h3 style="font-size: 16px; color: #fff; display: flex; align-items: center; gap: 8px;">
+          <i data-lucide="upload-cloud" style="color: var(--accent-cyan);"></i> Upload Security Logs
+        </h3>
+        <button class="modal-close" id="btnCloseUploadModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 12px; color: var(--text-secondary);">
+          Upload standard security logs in <b>CSV</b> or <b>JSON</b> format. The pipeline will automatically validate timestamps, IP addresses, normalize fields, detect attack patterns, and score risk.
+        </p>
+
+        <div class="file-dropzone" id="dropzoneArea">
+          <i data-lucide="upload" style="width: 36px; height: 36px; color: var(--accent-cyan); margin-bottom: 10px;"></i>
+          <p style="font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px;">Click to select file or drag & drop</p>
+          <p style="font-size: 11px; color: var(--text-muted);">Supports .csv, .json (Array or Newline-delimited)</p>
+          <input type="file" id="fileInput" accept=".csv,.json" style="display: none;">
+        </div>
+
+        <div id="uploadStatusMessage" style="font-size: 12px; font-family: var(--font-mono); color: var(--accent-cyan); display: none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: On-Demand IP Intel Lookup -->
+  <div class="modal-overlay" id="lookupModal">
+    <div class="modal-card" style="max-width: 620px;">
+      <div class="modal-header">
+        <h3 style="font-size: 16px; color: #fff; display: flex; align-items: center; gap: 8px;">
+          <i data-lucide="search" style="color: var(--accent-cyan);"></i> Threat Intelligence IP Dossier
+        </h3>
+        <button class="modal-close" id="btnCloseLookupModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; gap: 10px;">
+          <input type="text" id="lookupIpInput" class="search-input" placeholder="Enter IPv4 or IPv6 address (e.g. 194.26.29.112)...">
+          <button class="btn btn-primary" id="btnRunLookup">Query Intel</button>
+        </div>
+
+        <div id="lookupResultBox" style="display: none; margin-top: 10px;">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/static/js/charts.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

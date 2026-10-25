@@ -1,0 +1,32 @@
+timestamp,src_ip,dest_ip,src_port,dest_port,protocol,user,event_type,status,bytes_sent,bytes_received,message,user_agent
+2026-10-25T04:54:50.746872+00:00,194.26.29.112,10.0.0.15,49152,21,TCP,anonymous,port_scan,BLOCKED,64,0,TCP SYN scan probing port 21,Nmap NSE Engine
+2026-10-25T04:54:55.746872+00:00,194.26.29.112,10.0.0.15,49153,22,TCP,anonymous,port_scan,ACCEPTED,64,0,TCP SYN scan probing port 22,Nmap NSE Engine
+2026-10-25T04:55:00.746872+00:00,194.26.29.112,10.0.0.15,49154,23,TCP,anonymous,port_scan,BLOCKED,64,0,TCP SYN scan probing port 23,Nmap NSE Engine
+2026-10-25T04:55:05.746872+00:00,194.26.29.112,10.0.0.15,49155,25,TCP,anonymous,port_scan,BLOCKED,64,0,TCP SYN scan probing port 25,Nmap NSE Engine
+2026-10-25T04:55:10.746872+00:00,194.26.29.112,10.0.0.15,49156,80,TCP,anonymous,port_scan,BLOCKED,64,0,TCP SYN scan probing port 80,Nmap NSE Engine
+2026-10-25T04:55:15.746872+00:00,194.26.29.112,10.0.0.15,49157,443,TCP,anonymous,port_scan,ACCEPTED,64,0,TCP SYN scan probing port 443,Nmap NSE Engine
+2026-10-25T04:55:20.746872+00:00,194.26.29.112,10.0.0.15,49158,445,TCP,anonymous,port_scan,BLOCKED,64,0,TCP SYN scan probing port 445,Nmap NSE Engine
+2026-10-25T04:55:25.746872+00:00,194.26.29.112,10.0.0.15,49159,1433,TCP,anonymous,port_scan,BLOCKED,64,0,TCP SYN scan probing port 1433,Nmap NSE Engine
+2026-10-25T04:55:30.746872+00:00,194.26.29.112,10.0.0.15,49160,3306,TCP,anonymous,port_scan,BLOCKED,64,0,TCP SYN scan probing port 3306,Nmap NSE Engine
+2026-10-25T04:55:35.746872+00:00,194.26.29.112,10.0.0.15,49161,3389,TCP,anonymous,port_scan,BLOCKED,64,0,TCP SYN scan probing port 3389,Nmap NSE Engine
+2026-10-25T04:55:40.746872+00:00,194.26.29.112,10.0.0.15,49162,8080,TCP,anonymous,port_scan,ACCEPTED,64,0,TCP SYN scan probing port 8080,Nmap NSE Engine
+2026-10-25T04:55:45.746872+00:00,194.26.29.112,10.0.0.15,49163,8443,TCP,anonymous,port_scan,BLOCKED,64,0,TCP SYN scan probing port 8443,Nmap NSE Engine
+2026-10-25T05:09:50.746872+00:00,194.26.29.112,10.0.0.15,51200,22,SSH,admin,auth_failure,FAILURE,1240,420,SSH authentication failure for user admin,OpenSSH_8.9p1
+2026-10-25T05:10:02.746872+00:00,194.26.29.112,10.0.0.15,51201,22,SSH,root,auth_failure,FAILURE,1240,420,SSH authentication failure for user root,OpenSSH_8.9p1
+2026-10-25T05:10:14.746872+00:00,194.26.29.112,10.0.0.15,51202,22,SSH,devops,auth_failure,FAILURE,1240,420,SSH authentication failure for user devops,OpenSSH_8.9p1
+2026-10-25T05:10:26.746872+00:00,194.26.29.112,10.0.0.15,51203,22,SSH,svc_api,auth_failure,FAILURE,1240,420,SSH authentication failure for user svc_api,OpenSSH_8.9p1
+2026-10-25T05:10:38.746872+00:00,194.26.29.112,10.0.0.15,51204,22,SSH,deploy,auth_failure,FAILURE,1240,420,SSH authentication failure for user deploy,OpenSSH_8.9p1
+2026-10-25T05:10:50.746872+00:00,194.26.29.112,10.0.0.15,51205,22,SSH,root,auth_failure,FAILURE,1240,420,SSH authentication failure for user root,OpenSSH_8.9p1
+2026-10-25T05:11:02.746872+00:00,194.26.29.112,10.0.0.15,51206,22,SSH,root,auth_success,SUCCESS,1240,420,SSH authentication success for user root,OpenSSH_8.9p1
+2026-10-25T05:14:50.746872+00:00,10.0.0.15,10.0.0.15,0,0,LOCAL,svc_api,privilege_escalation,SUCCESS,0,0,sudo: /usr/bin/find . -exec /bin/sh -p ; [UID=0:root elevated],bash
+2026-10-25T05:24:50.746872+00:00,10.0.0.15,194.26.29.112,40100,443,HTTPS,root,c2_beacon,ESTABLISHED,512,1024,Outbound TLS session with periodic 60s jitter (Cobalt Strike malleable C2),Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+2026-10-25T05:25:50.746872+00:00,10.0.0.15,194.26.29.112,40101,443,HTTPS,root,c2_beacon,ESTABLISHED,512,1024,Outbound TLS session with periodic 60s jitter (Cobalt Strike malleable C2),Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+2026-10-25T05:26:50.746872+00:00,10.0.0.15,194.26.29.112,40102,443,HTTPS,root,c2_beacon,ESTABLISHED,512,1024,Outbound TLS session with periodic 60s jitter (Cobalt Strike malleable C2),Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+2026-10-25T05:27:50.746872+00:00,10.0.0.15,194.26.29.112,40103,443,HTTPS,root,c2_beacon,ESTABLISHED,512,1024,Outbound TLS session with periodic 60s jitter (Cobalt Strike malleable C2),Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+2026-10-25T05:28:50.746872+00:00,10.0.0.15,194.26.29.112,40104,443,HTTPS,root,c2_beacon,ESTABLISHED,512,1024,Outbound TLS session with periodic 60s jitter (Cobalt Strike malleable C2),Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+2026-10-25T05:29:50.746872+00:00,10.0.0.15,194.26.29.112,40105,443,HTTPS,root,c2_beacon,ESTABLISHED,512,1024,Outbound TLS session with periodic 60s jitter (Cobalt Strike malleable C2),Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+2026-10-25T05:30:50.746872+00:00,10.0.0.15,194.26.29.112,40106,443,HTTPS,root,c2_beacon,ESTABLISHED,512,1024,Outbound TLS session with periodic 60s jitter (Cobalt Strike malleable C2),Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+2026-10-25T05:31:50.746872+00:00,10.0.0.15,194.26.29.112,40107,443,HTTPS,root,c2_beacon,ESTABLISHED,512,1024,Outbound TLS session with periodic 60s jitter (Cobalt Strike malleable C2),Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+2026-10-25T05:32:50.746872+00:00,10.0.0.15,194.26.29.112,40108,443,HTTPS,root,c2_beacon,ESTABLISHED,512,1024,Outbound TLS session with periodic 60s jitter (Cobalt Strike malleable C2),Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+2026-10-25T05:33:50.746872+00:00,10.0.0.15,194.26.29.112,40109,443,HTTPS,root,c2_beacon,ESTABLISHED,512,1024,Outbound TLS session with periodic 60s jitter (Cobalt Strike malleable C2),Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+2026-10-25T05:39:50.746872+00:00,10.0.0.15,91.240.118.172,44210,443,HTTPS,root,data_exfiltration,COMPLETED,28450000,12000,High-volume encrypted archive stream exported via POST /api/v2/telemetry,curl/7.88.1
