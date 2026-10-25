@@ -411,13 +411,3 @@ AEGIS provides built-in executive and SIEM reporting with one click:
 - 📊 **Enriched Alerts CSV (`/api/export/csv`):** Tabular export with all normalized columns, threat intelligence tags, and risk scores ready for import into Splunk, Elastic SIEM, or Microsoft Sentinel.
 - 📦 **Incident Package JSON (`/api/export/json`):** Complete state dump for automated SOAR webhook consumption.
 
----
-
-## 🛡️ License
-
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for complete details.
-
----
-
-### Developed with ❤️ by [Aditya Johnson](https://github.com/aditya-johnson)
-*Cyber Threat Intelligence & Security Operations Analytics*
